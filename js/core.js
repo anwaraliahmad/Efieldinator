@@ -6,8 +6,6 @@
       document.body.appendChild( renderer.domElement );
 
 
-      var m = 1; // 1kg mass 
-
       var particle_sphere = new THREE.SphereGeometry(1); 
       var particle_material = new THREE.MeshBasicMaterial({color: 0x66ffcc});
       var particle = new THREE.Mesh(particle_sphere, particle_material);
@@ -15,14 +13,30 @@
 
       var p = new THREE.Object3D();
       p.add(particle);
-      p.position = new THREE.Vector3(1,1,1);
+      
+      function Particle(velocity, mass, charge, geometry) {
+          this.velocity = velocity;
+          this.mass = mass;
+          this.charge = charge;
+          this.geometry = geometry;
 
-      var velocity = new THREE.Vector3(0,0,0);
-      var particles = [p];
+      }
 
+      var p1 = new Particle(new THREE.Vector3(0,0,0), 104, 20, new THREE.Object3D());
+      p1.geometry.add(new THREE.Mesh(particle_sphere, particle_material));
+      p1.geometry.position.set(100, 100,400000);
+      var p2 = new Particle(new THREE.Vector3(0,0,0), 104, 20, new THREE.Object3D());
+      p2.geometry.add(new THREE.Mesh(particle_sphere, particle_material));
+      p2.geometry.position.set(100,100,1000);
+
+      var particles = [p1, p2];
+      console.log(particles[0].geometry.position);
+      console.log(particles[1].geometry.position);
       function init() {
         for (var i = 0; i < particles.length; i++ ){
-          scene.add(particles[i]);
+          var geo = particles[i].geometry;
+          scene.add(geo);
+
         }
       } 
 
@@ -41,16 +55,31 @@
       camera.position.z = 10;
 
       function applyElectricField(target_particle, sources) {
-        var E_Vec = new THREE.Vector3(.0001, 0, 0);
-        return E_Vec;
+        var E_vec = new THREE.Vector3(0, 0 , 0);
+        for (var i = 0; i < particles.length; i++) {
+          if (particles[i] != target_particle) {
+            var tp = new THREE.Vector3(); 
+            tp.copy(target_particle.geometry.position);
+            var r_harpoon = tp.sub(particles[i].geometry.position);
+            var r_hat = r_harpoon.normalize();
+            var e = r_hat.multiplyScalar(980*particles[i].charge)
+            var E = e.divideScalar(r_harpoon.length()).divideScalar(r_harpoon.length());
+
+            E_vec.add(E);
+          }
+        }
+
+        return E_vec;
       }
 
       function updateForce() {
         for (var n = 0; n < particles.length; n++) {
-          var E_Vec = applyElectricField(particles[n], particles);
-          velocity.add(E_Vec);
-          particles[n].position.add(velocity);
-          console.log(particles[n].position);
+          var E_vec = applyElectricField(particles[n], particles);
+          var F_e = E_vec.multiplyScalar(particles[n].charge);
+          var accel = F_e.divideScalar(particles[n].mass);
+          console.log(accel);
+          particles[n].velocity.add(accel);
+          particles[n].geometry.position.add(particles[n].velocity);
         }
       }
 
