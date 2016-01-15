@@ -25,18 +25,18 @@ var particle = new THREE.Mesh(particle_sphere, particle_material);
 
 
 
-var p1 = new Particle(new THREE.Vector3(0,0,0), 1, .0000001, new THREE.Object3D());
+var p1 = new Particle(new THREE.Vector3(0,0,0), 1, 1, new THREE.Object3D());
 p1.geometry.add(new THREE.Mesh(particle_sphere, particle_material));
 p1.geometry.position.set(0, 0, 0);
 
-var p2 = new Particle(new THREE.Vector3(0,0,0), 1, .0000001, new THREE.Object3D());
+var p2 = new Particle(new THREE.Vector3(0,0,0), -1, .01, new THREE.Object3D());
 p2.geometry.add(new THREE.Mesh(particle_sphere, particle_material2));
 p2.geometry.position.set(5,5,0);
-var p3 = new Particle(new THREE.Vector3(0,0,0), 1, .00000001, new THREE.Object3D());
+var p3 = new Particle(new THREE.Vector3(0,0,0), -1, .01, new THREE.Object3D());
 p3.geometry.add(new THREE.Mesh(particle_sphere, particle_material));
 p3.geometry.position.set(-15,20,5);
 
-var p4 = new Particle(new THREE.Vector3(0,0,0), 1, .001, new THREE.Object3D());
+var p4 = new Particle(new THREE.Vector3(0,0,0), 1, .01, new THREE.Object3D());
 p4.geometry.add(new THREE.Mesh(particle_sphere, particle_material));
 p4.geometry.position.set(20,20,10);      
 var particles = [p1, p2, p3, p4];
@@ -68,7 +68,7 @@ for (var i = 0; i < unit_vectors.length; i++) {
 
 function render() {
   requestAnimationFrame( render );  
-  updateForce(1);
+  updateForce(600000000000);
   renderer.render( scene, camera ); 
 }
 init();
