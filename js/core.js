@@ -1,19 +1,13 @@
 
-
-
-
 function Particle(velocity, mass, charge, geometry) {
-    this.velocity = velocity;
-    this.mass = mass;
-    this.charge = charge;
-    this.geometry = geometry;
-
-}
-
-function FixedSphere(rho, geometry) {
-  this.charge_density = rho;
+  this.velocity = velocity;
+  this.mass = mass;
+  this.charge = charge;
   this.geometry = geometry;
+  this.fixed = false;
+  this.type = "particle";
 }
+
 
 
 function findElectricField(t_pos, sources) {
@@ -21,19 +15,20 @@ function findElectricField(t_pos, sources) {
   for (var i = 0; i < sources.length; i++) {
       var tp = new THREE.Vector3(); 
       tp.copy(t_pos);
-//      console.log("r-harpoon: " + t_pos.x + " (x) " +  t_pos.y + " (y) " + t_pos.z + " (z) ");
       tp.sub(sources[i].geometry.position);
       var tph = new THREE.Vector3();
       tph.copy(tp);
       tph.normalize();
 
 
-      console.log(sources);
 
-      var e = tph.multiplyScalar(8987551787.37*sources[i].charge/(tp.length()^2));
+      var e;
+
+      e = tph.multiplyScalar(8987551787.37*sources[i].charge/(tp.length()^2));      
+    
 
       E_vec.add(e);
-    
+      console.log(e);
   }
 
   return E_vec;
@@ -41,6 +36,8 @@ function findElectricField(t_pos, sources) {
 
 function updateForce(frame_rate) {
   for (var n = 0; n < particles.length; n++) {
+    if (particles[n].fixed)
+      continue;
     var arr = particles.slice();
     arr.splice(n, 1);
     var E_vec = findElectricField(particles[n].geometry.position , arr);
