@@ -61,7 +61,7 @@ function init() {
     var geo = particles[i].geometry;
     domEvents.addEventListener(geo, 'mouseover', function(event){
       updateArrowHelper(e_hover, particles[i].geometry.position, 
-        findElectricField(particles[i].geometry.position,  particles), 10)
+        findElectricField(particles[i].geometry.position,  particles), 10);
     }, false);
 
     scene.add(geo);
