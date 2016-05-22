@@ -13,7 +13,7 @@ function Particle(velocity, mass, charge, geometry) {
 function findElectricField(t_pos, sources) {
   var E_vec = new THREE.Vector3(0, 0 , 0);
   for (var i = 0; i < sources.length; i++) {
-      var tp = new THREE.Vector3(); 
+      var tp = new THREE.Vector3();
       tp.copy(t_pos);
       tp.sub(sources[i].geometry.position);
       var tph = new THREE.Vector3();
@@ -24,11 +24,11 @@ function findElectricField(t_pos, sources) {
 
       var e;
 
-      e = tph.multiplyScalar(8987551787.37*sources[i].charge/(tp.length()^2));      
-    
+      e = tph.multiplyScalar(8987551787.37*sources[i].charge/(tp.length()^2));
+
 
       E_vec.add(e);
-      console.log(e);
+  //    console.log(e);
   }
 
   return E_vec;
