@@ -11,7 +11,7 @@ var uglify = require('gulp-uglify');
 
 gulp.task('compile-js', function() {
   return browserify('app/js/main.js')
-    .transform(babelify)
+    .transform("babelify", {presets: ["es2015"]})
     .bundle()
     .pipe(source('scripts.min.js'))
     .pipe(buffer())
