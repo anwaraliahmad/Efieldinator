@@ -1,35 +1,53 @@
-window.THREE = require("three/three");
+window.THREE = require("three");
+window.OrbitControls = require('three-orbit-controls')(THREE);
+
 import Charge from './modules/charge';
 
 
 let scene = new THREE.Scene();
 let camera =  new THREE.PerspectiveCamera(90, window.innerWidth/window.innerHeight, 0.1, 1000);
 camera.position.z = 20;
+
 let renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild( renderer.domElement );
+renderer.setClearColor(0x000000, 1.0)
 
+
+let  controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.25;
+controls.autoRotate = true;
+
+console.log(controls);
 class Electr {
   constructor() {
     this.particles = [];
   }
 
   create() {
-    let geometry2 = new THREE.PlaneGeometry( 5000, 5000);
-    let material2 = new THREE.MeshNormalMaterial( {color: 0xffff00, side: THREE.DoubleSide} );
-    let plane = new THREE.Mesh( geometry2, material2 );
-    scene.add(plane);
 
-    for (let i = 0; i < 2; i++) {
+
+    for (let i = 0; i < 4; i++) {
       let charge = new Charge(1,1);
+      charge.sphere.position.set(20*i, 20*i, 0);
       this.particles.push(charge);
-      scene.add(charge.getSphere());
+      scene.add(charge.sphere);
     }
 
-    var light = new THREE.AmbientLight( 0x404040 ); // soft white light
-    scene.add( light );
+    let light = new THREE.DirectionalLight( 0xffffff );
+				light.position.set( 1, 1, 1 );
+				scene.add( light );
+
+				light = new THREE.DirectionalLight( 0x002288 );
+				light.position.set( -1, -1, -1 );
+				scene.add( light );
+
+				light = new THREE.AmbientLight( 0x222222 );
+				scene.add( light );
 
   }
+
   findElectricField(t_pos, sources) {
     var E_vec = new THREE.Vector3(0, 0 , 0);
     for (var i = 0; i < sources.length; i++) {
@@ -66,14 +84,17 @@ class Electr {
     }
   }
 
-  render() {
-    requestAnimationFrame(this.render);
-  //  updateForce(6000);
-    renderer.render( scene, camera );
+}
 
-  }
+function render() {
+//  this.update();
+  requestAnimationFrame(render);
+  controls.update();
+//  updateForce(6000);
+  renderer.render( scene, camera );
+
 }
 
 const electr = new Electr();
 electr.create();
-electr.render();
+render();
