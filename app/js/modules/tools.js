@@ -3,8 +3,9 @@
 class Tools {
   constructor(scene) {
     this.scene = scene;
+
   }
-  
+
   setUpAxis() {
     var unit_vectors = [new THREE.Vector3(1,0,0),new THREE.Vector3(0,1,0),new THREE.Vector3(0,0,1)];
     var length = 2;
@@ -13,7 +14,7 @@ class Tools {
 
     for (var i = 0; i < unit_vectors.length; i++) {
       var arrowHelper = new THREE.ArrowHelper(unit_vectors[i], origin, length, hex[i]);
-      scene.add(arrowHelper);
+      this.scene.add(arrowHelper);
     }
 
   }
@@ -24,3 +25,6 @@ class Tools {
     arrow_helper.setLength(length);
   }
 }
+
+
+export default Tools;
