@@ -1,7 +1,6 @@
-# Electr
+# EFELLIN
 
 
-### What
+## about 
 ---
-A simple work-in-progress electric physics engine in Three.JS
-
+Simple electrostatic physics simulator (made with Three.js)
