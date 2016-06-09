@@ -1,7 +1,15 @@
+/**
+* Anwar Ali-Ahmad (https://github.com/anwaraliahmad)
+* Coulomb
+* Electrostatics physics demo using Three.js (credits to Mr.Doob, https://github.com/mrdoob)
+* MIT Licensed
+*/
+
 window.THREE = require("three");
 window.OrbitControls = require('three-orbit-controls')(THREE);
 window.DAT = require('dat-gui');
 import Charge from './modules/charge';
+import Stats from './modules/stats.min.js';
 
 
 
@@ -15,39 +23,48 @@ camera.position.z = 20;
 let renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild( renderer.domElement );
-renderer.setClearColor(0x000000, 1.0);
+renderer.setClearColor(0xffffff, .5);
 
 //to allow mouse control of camera
 let  controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.dampingFactor = 0.25;
 
+//setting up FPS stats
+var stats = new Stats();
+stats.showPanel( 0 ); // 0: fps, 1: ms, 2: mb, 3+: custom
+document.body.appendChild( stats.dom );
 
 class Electr {
   constructor() {
     this.particles = [];
     //scaling the force experienced down so Coulomb interaction between the charge bodies are actually observable
-    this.FORCE_DESCALING = 100000000000000;
+    this.FORCE_DESCALING = 100000000000;
     this.keepUpdating = false;
     this.gui = new DAT.GUI({
       height: 5*32-1
     });
-    this.gui.add(this, 'FORCE_DESCALING').min(0).max(100000000000000).step(10000).onFinishChange(function() {
-// refresh based on the new value of params.interation
-});;
+    this.gui.add(this, 'FORCE_DESCALING').min(0).max(100000000000000).step(10000);
     this.gui.add(this, 'keepUpdating');
   }
 
   create() {
 
     //adding charges spaced out in a row
-    for (let i = 0; i < 20; i++) {
-      let charge = new Charge(.0001*i*Math.pow(-1,i), .000001);
+    for (let i = 1; i <= 10; i++) {
+      //initializing a body with a small mass and charge as to not make it accelerate fast from Coulomb interaction
+      let clmbs = .0001*i*Math.pow(-1,i);
+      let mass = .000001;
+      let color = 0xffff00;
+      if (clmbs < 0)
+        color = 0x0000ff;
+      let charge = new Charge(clmbs, mass,color);
       let theta = i/Math.PI;
-      charge.sphere.position.set(20*Math.cos(theta), 20*Math.sin(theta), 0);
+      //this will result in a helix of charged bodies
+      charge.sphere.position.set(20*Math.cos(theta), 20*Math.sin(theta), i*20-200);
       this.particles.push(charge);
       scene.add(charge.sphere);
-    }
+      }
 
     //let there be light
     let light = new THREE.DirectionalLight( 0xffffff );
@@ -58,8 +75,6 @@ class Electr {
 		light.position.set( -1, -1, -1 );
 		scene.add( light );
 
-		light = new THREE.AmbientLight( 0x222222 );
-		scene.add( light );
 
 
     this.setUpAxis();
@@ -82,12 +97,6 @@ class Electr {
 
   }
 
-  //updating an arrow helper vector with given values
-  updateArrowHelper(arrow_helper, pos, dir, length) {
-    arrow_helper.position.set(pos);
-    arrow_helper.setDirection(dir);
-    arrow_helper.setLength(length);
-  }
 
 
   //find the net electric field experienced at a given point in space
@@ -110,7 +119,7 @@ class Electr {
         //Coulomb's law
         let e = tph.multiplyScalar(8987551787.37*sources[i].charge/(tp.length()^2));
 
-
+        //Adding the e-field from the source to the net e-field
         E_vec.add(e);
     }
     return E_vec;
@@ -119,7 +128,7 @@ class Electr {
   update() {
     for (var n = 0; n < this.particles.length; n++) {
 
-      if (this.particles[n].fixed)
+      if (this.particles[n].isFixed())
         continue;
       let arr = this.particles.slice();
       arr.splice(n, 1);
@@ -129,7 +138,6 @@ class Electr {
       let accel = E_vec.multiplyScalar(this.particles[n].getCharge()/(this.particles[n].getMass()*this.FORCE_DESCALING));
       this.particles[n].getVelocity().add(accel);
       this.particles[n].getSphere().position.add(this.particles[n].velocity);
-
     }
   }
 
@@ -143,11 +151,12 @@ electr.create();
 
 function render() {
   requestAnimationFrame(render);
+  stats.begin();
   controls.update();//updating camera controls
   if (electr.keepUpdating)
     electr.update();//updating electr engine
   renderer.render( scene, camera );
-
+  stats.end();
 }
 
 //initial call to the render loop

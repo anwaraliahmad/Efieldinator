@@ -29,6 +29,7 @@
     "gulp-rename": "^1.2.2",
     "gulp-uglify": "^1.5.3",
     "nodemon": "^1.9.2",
+    "stats-js": "^1.0.0-alpha1",
     "three": "^0.76.1",
     "three-orbit-controls": "^72.0.0",
     "vinyl-buffer": "^1.0.0",
