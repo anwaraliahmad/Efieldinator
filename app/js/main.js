@@ -1,6 +1,7 @@
 /**
 * Anwar Ali-Ahmad (https://github.com/anwaraliahmad)
-* Coulomb
+* Cameron Yang
+* efellin
 * Electrostatics physics demo using Three.js (credits to Mr.Doob, https://github.com/mrdoob)
 * MIT Licensed
 */
