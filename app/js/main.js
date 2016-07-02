@@ -16,7 +16,7 @@ import Stats from './modules/stats.min.js';
 
 //setting up scene to contain everything and camera to view them
 let scene = new THREE.Scene();
-let camera =  new THREE.PerspectiveCamera(90, window.innerWidth/window.innerHeight, 0.1, 1000);
+let camera =  new THREE.PerspectiveCamera(90, window.innerWidth/window.innerHeight, 0.1, 20000);
 camera.position.z = 20;
 
 //giving the document a WebGL renderer
@@ -26,7 +26,7 @@ document.body.appendChild( renderer.domElement );
 renderer.setClearColor(0xffffff, .5);
 
 //to allow mouse control of camera
-let  controls = new OrbitControls(camera, renderer.domElement);
+var controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.dampingFactor = 0.25;
 
@@ -34,6 +34,29 @@ controls.dampingFactor = 0.25;
 var stats = new Stats();
 stats.showPanel( 0 ); // 0: fps, 1: ms, 2: mb, 3+: custom
 document.body.appendChild( stats.dom );
+
+//Thanks to stemkoski's skybox example
+var imagePrefix = "img/stars_";
+var directions  = ["bk", "fr", "dn", "up", "lf", "rt"];
+var imageSuffix = ".jpg";
+var skyGeometry = new THREE.CubeGeometry( 5000, 5000, 5000 );
+
+var materialArray = [];
+var loader = new THREE.TextureLoader();
+loader.setPath('./img/');
+
+var materialArray = [];
+for (var i = 0; i < 6; i++) {
+  materialArray.push( new THREE.MeshBasicMaterial({
+      map: THREE.ImageUtils.loadTexture( imagePrefix + directions[i] + imageSuffix ),
+      side: THREE.BackSide
+  }));
+}
+var skyMaterial = new THREE.MeshFaceMaterial( materialArray );
+var skyBox = new THREE.Mesh( skyGeometry, skyMaterial );
+scene.add( skyBox );
+
+
 
 class Electr {
   constructor() {
@@ -71,9 +94,6 @@ class Electr {
 		light.position.set( 1, 1, 1 );
 		scene.add( light );
 
-		light = new THREE.DirectionalLight( 0x002288 );
-		light.position.set( -1, -1, -1 );
-		scene.add( light );
 
 
 
